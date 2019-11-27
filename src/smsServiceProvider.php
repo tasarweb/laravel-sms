@@ -8,18 +8,12 @@ class smsServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // Facade //
         $this->app->bind('tasar-sms', function () {
             return new SMS;
         });
 
-        $this->mergeConfigFrom(
-            __DIR__ . '/Config/tasarsms.php', 'tasarsms'
-        );
+        $this->mergeConfigFrom(__DIR__ . '/Config/tasarsms.php', 'tasarsms');
 
-        /*--------------------------------------------------------------------------
-        | Register helpers.php functions
-        |--------------------------------------------------------------------------*/
         require_once __DIR__ . '/Helpers/helpers.php';
     }
 
@@ -27,6 +21,10 @@ class smsServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/Config/tasarsms.php' => config_path('tasarsms.php')
-        ], 'config');
+        ], 'tasarsms-config');
+
+        $this->publishes([
+            __DIR__ . '/Database/migrations/create_tasarsms_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_tasarsms_table.php'),
+        ], 'tasarsms-migrations');
     }
 }

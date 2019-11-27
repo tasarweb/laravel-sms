@@ -2,11 +2,25 @@
 
 namespace Tasar\SMS;
 
+use GuzzleHttp\Client;
+
 class SMS
 {
-    public function send(string $message, array $numbers, string $from = null)
+    protected $client;
+    protected $panel;
+
+    public function __construct()
     {
-        return 'sending...';
-        $from = is_null($from) ? config('SMS::tasarsms.default_number') : $from;
+        $this->client = new Client();
+        $this->panel = config('tasarsms.panel');
+    }
+
+    public function __call($name, $arguments)
+    {
+        $class = __NAMESPACE__ . '\\Sender\\' . ucfirst(strtolower(config('tasarsms.panel')));
+        if (!method_exists($class, $name))
+            throw new \BadMethodCallException();
+
+        return call_user_func([new $class, $name], ...$arguments);
     }
 }
